@@ -16,8 +16,8 @@ Class {
 ZagTSNode class >> converter: type [
 	"Returns the conversion function for a node of the given type (symbol)."
 	"This function should accept the ZagTSNode and return a Zag AST object."
-	type = #identifier ifTrue: [ ^[ :node | ASRef variable: node sourcePart asSymbol ] ].
-	type = #'expression_statement' ifTrue: [ ^[ :node | (node >> 1) asZagASTNode ] ].
+	type = #identifier ifTrue: [ ^#identifierToZagAST ].
+	type = #'expression_statement' ifTrue: [ ^#childToZagAST ].
 ]
 
 { #category : 'instance creation' }
@@ -59,6 +59,18 @@ ZagTSNode >> asZagASTNode [
 	| converter |
 	converter := self class converter: self tsNodeType.
 	^converter value: self.
+]
+
+{ #category : 'converting - by node type' }
+ZagTSNode >> childToZagAST [
+	"Returns my first child as a Zag AST."
+	^(self >> 1) asZagASTNode.
+]
+
+{ #category : 'converting - by node type' }
+ZagTSNode >> identifierToZagAST [
+	"Converts me to a Zag AST, assuming I am an identifier."
+	^ASRef variable: self sourcePart asSymbol.
 ]
 
 { #category : 'initialization' }
