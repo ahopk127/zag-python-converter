@@ -54,8 +54,7 @@ ZagTSNode >> asTSNode [
 
 { #category : 'converting' }
 ZagTSNode >> asZagASTNode [
-	"comment stating purpose of instance-side method"
-	"scope: class-variables  &  instance-variables"
+	"Returns me as a Zag AST node."
 	| converter |
 	converter := self class converter: self tsNodeType.
 	^converter value: self.
@@ -93,5 +92,6 @@ ZagTSNode >> sourcePart [
 
 { #category : 'accessing' }
 ZagTSNode >> tsNodeType [
+	"Returns the type of my associated tree sitter node"
 	^node type asSymbol.
 ]
