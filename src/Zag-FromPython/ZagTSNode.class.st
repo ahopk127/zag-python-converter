@@ -18,6 +18,8 @@ ZagTSNode class >> converter: type [
 	"This function should accept the ZagTSNode and return a Zag AST object."
 	type = #identifier ifTrue: [ ^#identifierToZagAST ].
 	type = #'expression_statement' ifTrue: [ ^#childToZagAST ].
+	type = #string ifTrue: [ ^#stringToZagAST ].
+	(#(#integer #float) includes: type) ifTrue: [ ^#numberToZagAST ].
 ]
 
 { #category : 'instance creation' }
@@ -72,6 +74,12 @@ ZagTSNode >> identifierToZagAST [
 	^ASRef variable: self sourcePart asSymbol.
 ]
 
+{ #category : 'converting - by node type' }
+ZagTSNode >> numberToZagAST [
+	"Converts a number to a Zag AST."
+	^ASLiteral literal: self sourcePart asNumber.
+]
+
 { #category : 'initialization' }
 ZagTSNode >> setNode: aNode source: aString [
 	node := aNode.
@@ -88,6 +96,12 @@ ZagTSNode >> sourceFull [
 ZagTSNode >> sourcePart [
 	"Returns the part of the source code associated with this node."
 	^node textFromSourceText: source.
+]
+
+{ #category : 'converting - by node type' }
+ZagTSNode >> stringToZagAST [
+	"Converts a string to a Zag AST."
+	^ASLiteral literal: (self >> 2) sourcePart.
 ]
 
 { #category : 'accessing' }
