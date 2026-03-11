@@ -20,6 +20,7 @@ ZagTSNode class >> converter: type [
 	type = #'expression_statement' ifTrue: [ ^#childToZagAST ].
 	type = #string ifTrue: [ ^#stringToZagAST ].
 	(#(#integer #float) includes: type) ifTrue: [ ^#numberToZagAST ].
+	type = #'not_operator' ifTrue: [ ^#notToZagAST ].
 ]
 
 { #category : 'instance creation' }
@@ -72,6 +73,13 @@ ZagTSNode >> childToZagAST [
 ZagTSNode >> identifierToZagAST [
 	"Converts me to a Zag AST, assuming I am an identifier."
 	^ASRef variable: self sourcePart asSymbol.
+]
+
+{ #category : 'converting - by node type' }
+ZagTSNode >> notToZagAST [
+	"comment stating purpose of instance-side method"
+	"scope: class-variables  &  instance-variables"
+	^ASSend target: (self >> 1) asZagASTNode selector: #not.
 ]
 
 { #category : 'converting - by node type' }

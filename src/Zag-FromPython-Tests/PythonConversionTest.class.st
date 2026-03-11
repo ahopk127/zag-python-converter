@@ -32,6 +32,19 @@ PythonConversionTest >> testIntegerNode [
 ]
 
 { #category : 'tests' }
+PythonConversionTest >> testNotOperator [
+	"Ensure a 'not' expression can be converted properly."
+	| expected actual source root node |
+	source := 'not a'.
+	expected := ASSend target: (ASRef variable: #a) selector: #not.
+	
+	root := ZagTSNode newRoot: source.
+	node := root >> 1.
+	actual := node asZagASTNode.
+	self assert: actual equals: expected.
+]
+
+{ #category : 'tests' }
 PythonConversionTest >> testStringNode [
 	"Ensure a variable can be converted to Zag properly."
 	| expected actual source root node |
