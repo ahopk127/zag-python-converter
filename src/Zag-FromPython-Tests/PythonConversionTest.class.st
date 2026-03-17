@@ -36,7 +36,7 @@ PythonConversionTest >> testNotOperator [
 	"Ensure a 'not' expression can be converted properly."
 	| expected actual source root node |
 	source := 'not a'.
-	expected := ASSend target: (ASRef variable: #a) selector: #not.
+	expected := ASSend target: (ASSend target: (ASRef variable: #a) selector: #toPythonBoolean) selector: #not.
 	
 	root := ZagTSNode newRoot: source.
 	node := root >> 1.

@@ -79,7 +79,7 @@ ZagTSNode >> identifierToZagAST [
 ZagTSNode >> notToZagAST [
 	"comment stating purpose of instance-side method"
 	"scope: class-variables  &  instance-variables"
-	^ASSend target: (self >> 1) asZagASTNode selector: #not.
+	^ASSend target: (ASSend target: (self >> 1) asZagASTNode selector: #toPythonBoolean) selector: #not.
 ]
 
 { #category : 'converting - by node type' }
