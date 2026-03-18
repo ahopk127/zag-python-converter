@@ -8,8 +8,9 @@ Class {
 		'node',
 		'source'
 	],
-	#category : 'Zag-FromPython',
-	#package : 'Zag-FromPython'
+	#category : 'Zag-FromPython-AST',
+	#package : 'Zag-FromPython',
+	#tag : 'AST'
 }
 
 { #category : 'accessing' }
@@ -21,6 +22,7 @@ ZagTSNode class >> converter: type [
 	type = #string ifTrue: [ ^#stringToZagAST ].
 	(#(#integer #float) includes: type) ifTrue: [ ^#numberToZagAST ].
 	type = #'not_operator' ifTrue: [ ^#notToZagAST ].
+	type = #'binary_operator' ifTrue: [ ^#binaryToZagAST ].
 ]
 
 { #category : 'instance creation' }
@@ -61,6 +63,20 @@ ZagTSNode >> asZagASTNode [
 	| converter |
 	converter := self class converter: self tsNodeType.
 	^converter value: self.
+]
+
+{ #category : 'converting - by node type' }
+ZagTSNode >> binaryToZagAST [
+	"Converts a binary operator to a Zag AST."
+	| start end op |
+	start := ((self >> 1) asTSNode endPositionFromSourceText: source) + 1.
+	end := ((self >> 2) asTSNode startPositionFromSourceText: source) - 1.
+	op := (source copyFrom: start to: end) trimBoth asSymbol.
+	
+	(#(#+ #- #* #/) includes: op) ifTrue:
+		[ ^ASSend target: (self >> 1) asZagASTNode selector: op args: {(self >> 2) asZagASTNode} ].
+	op = #** ifTrue:
+		[ ^ASSend target: (self >> 1) asZagASTNode selector: #raisedTo: args: {(self >> 2) asZagASTNode} ].
 ]
 
 { #category : 'converting - by node type' }
