@@ -68,10 +68,8 @@ ZagTSNode >> asZagASTNode [
 { #category : 'converting - by node type' }
 ZagTSNode >> binaryToZagAST [
 	"Converts a binary operator to a Zag AST."
-	| start end op |
-	start := ((self >> 1) asTSNode endPositionFromSourceText: source) + 1.
-	end := ((self >> 2) asTSNode startPositionFromSourceText: source) - 1.
-	op := (source copyFrom: start to: end) trimBoth asSymbol.
+	| op |
+	op := self getBinaryOperator.
 	
 	(#(#+ #- #* #/) includes: op) ifTrue:
 		[ ^ASSend target: (self >> 1) asZagASTNode selector: op args: {(self >> 2) asZagASTNode} ].
@@ -85,6 +83,15 @@ ZagTSNode >> childToZagAST [
 	^(self >> 1) asZagASTNode.
 ]
 
+{ #category : 'computing' }
+ZagTSNode >> getBinaryOperator [
+	"If I represent a binary operator, return the operator I represent."
+	| start end |
+	start := ((self >> 1) asTSNode endPositionFromSourceText: source) + 1.
+	end := ((self >> 2) asTSNode startPositionFromSourceText: source) - 1.
+	^(source copyFrom: start to: end) trimBoth asSymbol.
+]
+
 { #category : 'converting - by node type' }
 ZagTSNode >> identifierToZagAST [
 	"Converts me to a Zag AST, assuming I am an identifier."
@@ -95,7 +102,7 @@ ZagTSNode >> identifierToZagAST [
 ZagTSNode >> notToZagAST [
 	"comment stating purpose of instance-side method"
 	"scope: class-variables  &  instance-variables"
-	^ASSend target: (ASSend target: (self >> 1) asZagASTNode selector: #toPythonBoolean) selector: #not.
+	^ASSend target: (self >> 1) asZagASTNode selector: #pythonNot.
 ]
 
 { #category : 'converting - by node type' }

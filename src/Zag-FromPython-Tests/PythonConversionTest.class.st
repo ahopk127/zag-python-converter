@@ -1,8 +1,9 @@
 Class {
 	#name : 'PythonConversionTest',
 	#superclass : 'TestCase',
-	#category : 'Zag-FromPython-Tests',
-	#package : 'Zag-FromPython-Tests'
+	#category : 'Zag-FromPython-Tests-Tests',
+	#package : 'Zag-FromPython-Tests',
+	#tag : 'Tests'
 }
 
 { #category : 'tests' }
@@ -21,7 +22,7 @@ PythonConversionTest >> testAddition [
 	self assert: actual equals: expected.
 ]
 
-{ #category : 'tests' }
+{ #category : 'tests - literals' }
 PythonConversionTest >> testFloatNode [
 	"Ensure a variable can be converted to Zag properly."
 	| expected actual source root node |
@@ -34,7 +35,7 @@ PythonConversionTest >> testFloatNode [
 	self assert: actual equals: expected.
 ]
 
-{ #category : 'tests' }
+{ #category : 'tests - literals' }
 PythonConversionTest >> testIntegerNode [
 	"Ensure a variable can be converted to Zag properly."
 	| expected actual source root node |
@@ -71,7 +72,7 @@ PythonConversionTest >> testNotOperator [
 	"Ensure a 'not' expression can be converted properly."
 	| expected actual source root node |
 	source := 'not a'.
-	expected := ASSend target: (ASSend target: (ASRef variable: #a) selector: #toPythonBoolean) selector: #not.
+	expected := ASSend target: (ASRef variable: #a) selector: #pythonNot.
 	
 	root := ZagTSNode newRoot: source.
 	node := root >> 1.
@@ -95,7 +96,7 @@ PythonConversionTest >> testPowers [
 	self assert: actual equals: expected.
 ]
 
-{ #category : 'tests' }
+{ #category : 'tests - literals' }
 PythonConversionTest >> testStringNode [
 	"Ensure a variable can be converted to Zag properly."
 	| expected actual source root node |
