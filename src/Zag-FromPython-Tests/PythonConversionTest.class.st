@@ -22,6 +22,27 @@ PythonConversionTest >> testAddition [
 	self assert: actual equals: expected.
 ]
 
+{ #category : 'tests' }
+PythonConversionTest >> testAndOrOperator [
+	"Ensure an 'and' expression can be converted to Zag properly."
+	| expected actual source root node |
+	source := 'a and b or c'. "= (a and b) or c"
+	expected := ASSend
+		target: (ASSend
+			target: (ASRef variable: #a)
+			selector: #pythonAnd:
+			args: {ASBlockNode
+				arguments: #() locals: #() body: { ASRef variable: #b }})
+		selector: #pythonOr:
+		args: {ASBlockNode
+			arguments: #() locals: #() body: { ASRef variable: #c }}.
+	
+	root := ZagTSNode newRoot: source.
+	node := root >> 1.
+	actual := node asZagASTNode.
+	self assert: actual equals: expected.
+]
+
 { #category : 'tests - literals' }
 PythonConversionTest >> testFloatNode [
 	"Ensure a variable can be converted to Zag properly."

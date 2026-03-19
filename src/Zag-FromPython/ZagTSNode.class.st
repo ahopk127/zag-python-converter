@@ -23,6 +23,7 @@ ZagTSNode class >> converter: type [
 	(#(#integer #float) includes: type) ifTrue: [ ^#numberToZagAST ].
 	type = #'not_operator' ifTrue: [ ^#notToZagAST ].
 	type = #'binary_operator' ifTrue: [ ^#binaryToZagAST ].
+	type = #'boolean_operator' ifTrue: [ ^#booleanToZagAST ].
 ]
 
 { #category : 'instance creation' }
@@ -75,6 +76,19 @@ ZagTSNode >> binaryToZagAST [
 		[ ^ASSend target: (self >> 1) asZagASTNode selector: op args: {(self >> 2) asZagASTNode} ].
 	op = #** ifTrue:
 		[ ^ASSend target: (self >> 1) asZagASTNode selector: #raisedTo: args: {(self >> 2) asZagASTNode} ].
+]
+
+{ #category : 'converting - by node type' }
+ZagTSNode >> booleanToZagAST [
+	"convert and/or to Zag AST"
+ 	| op |
+	op := self getBinaryOperator.
+	op = #and ifTrue:
+		[ ^ASSend target: (self >> 1) asZagASTNode selector: #pythonAnd:
+			args: {ASBlockNode arguments: #() locals: #() body: {(self >> 2) asZagASTNode}} ].
+	op = #or ifTrue:
+		[ ^ASSend target: (self >> 1) asZagASTNode selector: #pythonOr:
+			args: {ASBlockNode arguments: #() locals: #() body: {(self >> 2) asZagASTNode}} ].
 ]
 
 { #category : 'converting - by node type' }
