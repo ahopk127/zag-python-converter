@@ -72,7 +72,7 @@ ZagTSNode >> binaryToZagAST [
 	| op |
 	op := self getBinaryOperator.
 	
-	(#(#+ #- #* #/) includes: op) ifTrue:
+	(#(#+ #- #* #/ #// #%) includes: op) ifTrue:
 		[ ^ASSend target: (self >> 1) asZagASTNode selector: op args: {(self >> 2) asZagASTNode} ].
 	op = #** ifTrue:
 		[ ^ASSend target: (self >> 1) asZagASTNode selector: #raisedTo: args: {(self >> 2) asZagASTNode} ].
