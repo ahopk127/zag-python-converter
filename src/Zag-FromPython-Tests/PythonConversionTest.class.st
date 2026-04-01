@@ -124,6 +124,22 @@ PythonConversionTest >> testMultiOperators [
 ]
 
 { #category : 'tests - operators' }
+PythonConversionTest >> testNegation [
+	"Ensure an addition expression can be converted to Zag properly."
+	| expected actual source root node |
+	source := '-a'.
+	expected := ASSend
+		target: (ASRef variable: #a)
+		selector: #negated
+		args: #().
+	
+	root := ZagTSNode newRoot: source.
+	node := root >> 1.
+	actual := node asZagASTNode.
+	self assert: actual equals: expected.
+]
+
+{ #category : 'tests - operators' }
 PythonConversionTest >> testNotOperator [
 	"Ensure a 'not' expression can be converted properly."
 	| expected actual source root node |

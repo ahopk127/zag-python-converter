@@ -22,6 +22,7 @@ ZagTSNode class >> converter: type [
 	type = #string ifTrue: [ ^#stringToZagAST ].
 	(#(#integer #float) includes: type) ifTrue: [ ^#numberToZagAST ].
 	type = #'not_operator' ifTrue: [ ^#notToZagAST ].
+	type = #'unary_operator' ifTrue: [ ^#unaryToZagAST ].
 	type = #'binary_operator' ifTrue: [ ^#binaryToZagAST ].
 	type = #'boolean_operator' ifTrue: [ ^#booleanToZagAST ].
 ]
@@ -115,6 +116,15 @@ ZagTSNode >> getBinaryOperator [
 	^(source copyFrom: start to: end) trimBoth asSymbol.
 ]
 
+{ #category : 'computing' }
+ZagTSNode >> getUnaryOperator [
+	"If I represent a unary operator, return the operator I represent."
+	| start end |
+	start := self asTSNode startPositionFromSourceText: source.
+	end := ((self >> 1) asTSNode startPositionFromSourceText: source) - 1.
+	^(source copyFrom: start to: end) trimBoth asSymbol.
+]
+
 { #category : 'converting - by node type' }
 ZagTSNode >> identifierToZagAST [
 	"Converts me to a Zag AST, assuming I am an identifier."
@@ -162,4 +172,19 @@ ZagTSNode >> stringToZagAST [
 ZagTSNode >> tsNodeType [
 	"Returns the type of my associated tree sitter node"
 	^node type asSymbol.
+]
+
+{ #category : 'converting - by node type' }
+ZagTSNode >> unaryToZagAST [
+	"Converts a unary operator to a Zag AST."
+	| op |
+	op := self getUnaryOperator.
+	op = #- ifTrue: [ ^self unaryToZagAST: #negated ].
+	op = #~ ifTrue: [ ^self unaryToZagAST: #bitInvert ].
+]
+
+{ #category : 'converting - by node type' }
+ZagTSNode >> unaryToZagAST: selector [
+	"Creates a unary zag AST from this node's child using the provided selector."
+	^ASSend target: (self >> 1) asZagASTNode selector: selector args: {}.
 ]
