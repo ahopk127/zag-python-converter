@@ -6,7 +6,7 @@ Class {
 	#tag : 'Tests'
 }
 
-{ #category : 'tests' }
+{ #category : 'tests - operators' }
 PythonConversionTest >> testAddition [
 	"Ensure an addition expression can be converted to Zag properly."
 	| expected actual source root node |
@@ -22,7 +22,7 @@ PythonConversionTest >> testAddition [
 	self assert: actual equals: expected.
 ]
 
-{ #category : 'tests' }
+{ #category : 'tests - operators' }
 PythonConversionTest >> testAndOrOperator [
 	"Ensure an 'and' expression can be converted to Zag properly."
 	| expected actual source root node |
@@ -36,6 +36,41 @@ PythonConversionTest >> testAndOrOperator [
 		selector: #pythonOr:
 		args: {ASBlockNode
 			arguments: #() locals: #() body: { ASRef variable: #c }}.
+	
+	root := ZagTSNode newRoot: source.
+	node := root >> 1.
+	actual := node asZagASTNode.
+	self assert: actual equals: expected.
+]
+
+{ #category : 'tests - operators' }
+PythonConversionTest >> testBitShiftLeft [
+	"Ensure an addition expression can be converted to Zag properly."
+	| expected actual source root node |
+	source := 'a << b'.
+	expected := ASSend
+		target: (ASRef variable: #a)
+		selector: #bitShift:
+		args: {ASRef variable: #b}.
+	
+	root := ZagTSNode newRoot: source.
+	node := root >> 1.
+	actual := node asZagASTNode.
+	self assert: actual equals: expected.
+]
+
+{ #category : 'tests - operators' }
+PythonConversionTest >> testBitShiftRight [
+	"Ensure an addition expression can be converted to Zag properly."
+	| expected actual source root node |
+	source := 'a >> b'.
+	expected := ASSend
+		target: (ASRef variable: #a)
+		selector: #bitShift:
+		args: {ASSend
+			target: (ASRef variable: #b)
+			selector: #negated
+			args: #()}.
 	
 	root := ZagTSNode newRoot: source.
 	node := root >> 1.
@@ -88,7 +123,7 @@ PythonConversionTest >> testMultiOperators [
 	self assert: actual equals: expected.
 ]
 
-{ #category : 'tests' }
+{ #category : 'tests - operators' }
 PythonConversionTest >> testNotOperator [
 	"Ensure a 'not' expression can be converted properly."
 	| expected actual source root node |
@@ -101,7 +136,7 @@ PythonConversionTest >> testNotOperator [
 	self assert: actual equals: expected.
 ]
 
-{ #category : 'tests' }
+{ #category : 'tests - operators' }
 PythonConversionTest >> testPowers [
 	"Ensure an exponent can be converted to Zag properly."
 	| expected actual source root node |

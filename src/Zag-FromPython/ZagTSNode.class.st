@@ -72,10 +72,19 @@ ZagTSNode >> binaryToZagAST [
 	| op |
 	op := self getBinaryOperator.
 	
-	(#(#+ #- #* #/ #// #%) includes: op) ifTrue:
-		[ ^ASSend target: (self >> 1) asZagASTNode selector: op args: {(self >> 2) asZagASTNode} ].
-	op = #** ifTrue:
-		[ ^ASSend target: (self >> 1) asZagASTNode selector: #raisedTo: args: {(self >> 2) asZagASTNode} ].
+	(#(#+ #- #* #/ #// #% #& #|) includes: op) ifTrue: [ ^self binaryToZagAST: op ].
+	op = #** ifTrue: [ ^self binaryToZagAST: #raisedTo: ].
+	op = #'^' ifTrue: [ ^self binaryToZagAST: #bitXor: ].
+	op = #<< ifTrue: [ ^self binaryToZagAST: #bitShift: ].
+	op = #>> ifTrue:
+		[ ^ASSend target: (self >> 1) asZagASTNode selector: #bitShift: args: {
+			ASSend target: (self >> 2) asZagASTNode selector: #negated args: #() } ].
+]
+
+{ #category : 'converting - by node type' }
+ZagTSNode >> binaryToZagAST: selector [
+	"Creates a binary zag AST from this node's children using the provided selector."
+	^ASSend target: (self >> 1) asZagASTNode selector: selector args: {(self >> 2) asZagASTNode}.
 ]
 
 { #category : 'converting - by node type' }
