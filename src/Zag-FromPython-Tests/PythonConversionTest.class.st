@@ -43,7 +43,7 @@ PythonConversionTest >> testAndOrOperator [
 	self assert: actual equals: expected.
 ]
 
-{ #category : 'tests - operators' }
+{ #category : 'tests - assignment' }
 PythonConversionTest >> testAssign [
 	"Ensure an assignment expression can be converted to Zag properly."
 	| expected actual source root node |
@@ -58,7 +58,7 @@ PythonConversionTest >> testAssign [
 	self assert: actual equals: expected.
 ]
 
-{ #category : 'tests - operators' }
+{ #category : 'tests - assignment' }
 PythonConversionTest >> testAssignPlus [
 	"Ensure an augmented assignment expression (+=) can be converted to Zag properly."
 	| expected actual source root node |
@@ -111,7 +111,7 @@ PythonConversionTest >> testBitShiftRight [
 	self assert: actual equals: expected.
 ]
 
-{ #category : 'tests - operators' }
+{ #category : 'tests - comparison & membership operators' }
 PythonConversionTest >> testComparison [
 	"Ensure a comparison expression can be converted to Zag properly."
 	| expected actual source root node |
@@ -127,7 +127,7 @@ PythonConversionTest >> testComparison [
 	self assert: actual equals: expected.
 ]
 
-{ #category : 'tests - operators' }
+{ #category : 'tests - comparison & membership operators' }
 PythonConversionTest >> testEquals [
 	"Ensure an == expression can be converted to Zag properly."
 	| expected actual source root node |
@@ -156,7 +156,7 @@ PythonConversionTest >> testFloatNode [
 	self assert: actual equals: expected.
 ]
 
-{ #category : 'tests - operators' }
+{ #category : 'tests - comparison & membership operators' }
 PythonConversionTest >> testIn [
 	"Ensure a 'in' expression can be converted to Zag properly."
 	| expected actual source root node |
@@ -185,7 +185,7 @@ PythonConversionTest >> testIntegerNode [
 	self assert: actual equals: expected.
 ]
 
-{ #category : 'tests - operators' }
+{ #category : 'tests - comparison & membership operators' }
 PythonConversionTest >> testIs [
 	"Ensure an 'is' expression can be converted to Zag properly."
 	| expected actual source root node |
@@ -201,7 +201,7 @@ PythonConversionTest >> testIs [
 	self assert: actual equals: expected.
 ]
 
-{ #category : 'tests - operators' }
+{ #category : 'tests - comparison & membership operators' }
 PythonConversionTest >> testIsNot [
 	"Ensure an 'is not' expression can be converted to Zag properly.  Separate because it is a two-word operator."
 	| expected actual source root node |
@@ -217,7 +217,7 @@ PythonConversionTest >> testIsNot [
 	self assert: actual equals: expected.
 ]
 
-{ #category : 'tests' }
+{ #category : 'tests - operators' }
 PythonConversionTest >> testMultiOperators [
 	"Ensure an expression with multiple operators can be converted to Zag properly."
 	| expected actual source root node |
@@ -252,7 +252,7 @@ PythonConversionTest >> testNegation [
 	self assert: actual equals: expected.
 ]
 
-{ #category : 'tests - operators' }
+{ #category : 'tests - comparison & membership operators' }
 PythonConversionTest >> testNotIn [
 	"Ensure a 'not in' expression can be converted to Zag properly.  Included because it has distinct semantics from 'is' and is one operator of two words."
 	| expected actual source root node |
