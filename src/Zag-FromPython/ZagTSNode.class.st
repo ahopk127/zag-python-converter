@@ -23,7 +23,7 @@ ZagTSNode class >> converter: type [
 	(#(#integer #float) includes: type) ifTrue: [ ^#numberToZagAST ].
 	type = #'not_operator' ifTrue: [ ^#notToZagAST ].
 	type = #'unary_operator' ifTrue: [ ^#unaryToZagAST ].
-	type = #'binary_operator' ifTrue: [ ^#binaryToZagAST ].
+	(#(#'binary_operator' #'comparison_operator') includes: type) ifTrue: [ ^#binaryToZagAST ].
 	type = #'boolean_operator' ifTrue: [ ^#booleanToZagAST ].
 	type = #assignment ifTrue: [ ^#assignToZagAST ].
 	type = #'augmented_assignment' ifTrue: [ ^#augmentedAssignToZagAST ].
@@ -94,13 +94,17 @@ ZagTSNode >> binaryToZagAST [
 { #category : 'converting - by node type' }
 ZagTSNode >> binaryToZagASTOperator: op [
 	"Creates a binary zag AST from this node's children using the provided Python operator."
-	(#(#+ #- #* #/ #// #% #& #|) includes: op) ifTrue: [ ^self binaryToZagASTSelector: op ].
+	(#(#+ #- #* #/ #// #% #& #| #< #<= #> #>=) includes: op) ifTrue: [ ^self binaryToZagASTSelector: op ].
 	op = #** ifTrue: [ ^self binaryToZagASTSelector: #raisedTo: ].
 	op = #'^' ifTrue: [ ^self binaryToZagASTSelector: #bitXor: ].
 	op = #<< ifTrue: [ ^self binaryToZagASTSelector: #bitShift: ].
 	op = #>> ifTrue:
 		[ ^ASSend target: (self >> 1) asZagASTNode selector: #bitShift: args: {
-			ASSend target: (self >> 2) asZagASTNode selector: #negated args: #() } ]. 
+			ASSend target: (self >> 2) asZagASTNode selector: #negated args: #() } ].
+	op = #== ifTrue: [ ^self binaryToZagASTSelector: #= ].
+	op = #!= ifTrue: [ ^self binaryToZagASTSelector: #~= ].
+	op = #is ifTrue: [ ^self binaryToZagASTSelector: #== ].
+	op = #'is not' ifTrue: [ ^self binaryToZagASTSelector: #~~ ].
 ]
 
 { #category : 'converting - by node type' }

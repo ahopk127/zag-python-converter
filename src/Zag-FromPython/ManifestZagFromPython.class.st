@@ -15,3 +15,10 @@ ManifestZagFromPython class >> ruleLongMethodsRuleV1FalsePositive [
 	<ignoreForCoverage>
 	^ #(#(#(#RGMethodDefinition #(#'ZagTSNode class' #converter: #true)) #'2026-04-08T07:54:23.572-05:00') )
 ]
+
+{ #category : 'code-critics' }
+ManifestZagFromPython class >> ruleReCyclomaticComplexityRuleV1FalsePositive [
+
+	<ignoreForCoverage>
+	^ #(#(#(#RGMethodDefinition #(#'ZagTSNode class' #converter: #true)) #'2026-04-08T08:20:55.15-05:00') )
+]

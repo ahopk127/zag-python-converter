@@ -111,6 +111,38 @@ PythonConversionTest >> testBitShiftRight [
 	self assert: actual equals: expected.
 ]
 
+{ #category : 'tests - operators' }
+PythonConversionTest >> testComparison [
+	"Ensure an addition expression can be converted to Zag properly."
+	| expected actual source root node |
+	source := 'a > b'.
+	expected := ASSend
+		target: (ASRef variable: #a)
+		selector: #>
+		args: {ASRef variable: #b}.
+	
+	root := ZagTSNode newRoot: source.
+	node := root >> 1.
+	actual := node asZagASTNode.
+	self assert: actual equals: expected.
+]
+
+{ #category : 'tests - operators' }
+PythonConversionTest >> testEquals [
+	"Ensure an addition expression can be converted to Zag properly."
+	| expected actual source root node |
+	source := 'a == b'.
+	expected := ASSend
+		target: (ASRef variable: #a)
+		selector: #=
+		args: {ASRef variable: #b}.
+	
+	root := ZagTSNode newRoot: source.
+	node := root >> 1.
+	actual := node asZagASTNode.
+	self assert: actual equals: expected.
+]
+
 { #category : 'tests - literals' }
 PythonConversionTest >> testFloatNode [
 	"Ensure a variable can be converted to Zag properly."
@@ -130,6 +162,38 @@ PythonConversionTest >> testIntegerNode [
 	| expected actual source root node |
 	source := '2'.
 	expected := ASLiteral literal: 2.
+	
+	root := ZagTSNode newRoot: source.
+	node := root >> 1.
+	actual := node asZagASTNode.
+	self assert: actual equals: expected.
+]
+
+{ #category : 'tests - operators' }
+PythonConversionTest >> testIs [
+	"Ensure an addition expression can be converted to Zag properly."
+	| expected actual source root node |
+	source := 'a is b'.
+	expected := ASSend
+		target: (ASRef variable: #a)
+		selector: #==
+		args: {ASRef variable: #b}.
+	
+	root := ZagTSNode newRoot: source.
+	node := root >> 1.
+	actual := node asZagASTNode.
+	self assert: actual equals: expected.
+]
+
+{ #category : 'tests - operators' }
+PythonConversionTest >> testIsNot [
+	"Ensure an addition expression can be converted to Zag properly."
+	| expected actual source root node |
+	source := 'a is not b'.
+	expected := ASSend
+		target: (ASRef variable: #a)
+		selector: #~~
+		args: {ASRef variable: #b}.
 	
 	root := ZagTSNode newRoot: source.
 	node := root >> 1.
