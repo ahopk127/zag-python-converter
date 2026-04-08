@@ -324,3 +324,18 @@ PythonConversionTest >> testVariableNode [
 	actual := node asZagASTNode.
 	self assert: actual equals: expected.
 ]
+
+{ #category : 'tests - assignment' }
+PythonConversionTest >> testWalrus [
+	"Ensure a := expression can be converted to Zag properly."
+	| expected actual source root node |
+	source := 'a := b'.
+	expected := ASAssign
+		variable: (ASRef variable: #a)
+		expression: (ASRef variable: #b).
+	
+	root := ZagTSNode newRoot: source.
+	node := root >> 1.
+	actual := node asZagASTNode.
+	self assert: actual equals: expected.
+]
