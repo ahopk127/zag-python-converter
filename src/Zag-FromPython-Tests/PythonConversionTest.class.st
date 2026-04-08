@@ -45,7 +45,7 @@ PythonConversionTest >> testAndOrOperator [
 
 { #category : 'tests - operators' }
 PythonConversionTest >> testAssign [
-	"Ensure an addition expression can be converted to Zag properly."
+	"Ensure an assignment expression can be converted to Zag properly."
 	| expected actual source root node |
 	source := 'a = b'.
 	expected := ASAssign
@@ -60,7 +60,7 @@ PythonConversionTest >> testAssign [
 
 { #category : 'tests - operators' }
 PythonConversionTest >> testAssignPlus [
-	"Ensure an addition expression can be converted to Zag properly."
+	"Ensure an augmented assignment expression (+=) can be converted to Zag properly."
 	| expected actual source root node |
 	source := 'a += b'.
 	expected := ASAssign
@@ -78,7 +78,7 @@ PythonConversionTest >> testAssignPlus [
 
 { #category : 'tests - operators' }
 PythonConversionTest >> testBitShiftLeft [
-	"Ensure an addition expression can be converted to Zag properly."
+	"Ensure a left bit shift expression can be converted to Zag properly."
 	| expected actual source root node |
 	source := 'a << b'.
 	expected := ASSend
@@ -94,7 +94,7 @@ PythonConversionTest >> testBitShiftLeft [
 
 { #category : 'tests - operators' }
 PythonConversionTest >> testBitShiftRight [
-	"Ensure an addition expression can be converted to Zag properly."
+	"Ensure a right bit shift expression can be converted to Zag properly.  Included because it has unique semantics compared to left shift."
 	| expected actual source root node |
 	source := 'a >> b'.
 	expected := ASSend
@@ -113,7 +113,7 @@ PythonConversionTest >> testBitShiftRight [
 
 { #category : 'tests - operators' }
 PythonConversionTest >> testComparison [
-	"Ensure an addition expression can be converted to Zag properly."
+	"Ensure a comparison expression can be converted to Zag properly."
 	| expected actual source root node |
 	source := 'a > b'.
 	expected := ASSend
@@ -129,7 +129,7 @@ PythonConversionTest >> testComparison [
 
 { #category : 'tests - operators' }
 PythonConversionTest >> testEquals [
-	"Ensure an addition expression can be converted to Zag properly."
+	"Ensure an == expression can be converted to Zag properly."
 	| expected actual source root node |
 	source := 'a == b'.
 	expected := ASSend
@@ -158,7 +158,7 @@ PythonConversionTest >> testFloatNode [
 
 { #category : 'tests - operators' }
 PythonConversionTest >> testIn [
-	"Ensure an addition expression can be converted to Zag properly."
+	"Ensure a 'in' expression can be converted to Zag properly."
 	| expected actual source root node |
 	source := 'a in b'.
 	expected := ASSend
@@ -187,7 +187,7 @@ PythonConversionTest >> testIntegerNode [
 
 { #category : 'tests - operators' }
 PythonConversionTest >> testIs [
-	"Ensure an addition expression can be converted to Zag properly."
+	"Ensure an 'is' expression can be converted to Zag properly."
 	| expected actual source root node |
 	source := 'a is b'.
 	expected := ASSend
@@ -203,7 +203,7 @@ PythonConversionTest >> testIs [
 
 { #category : 'tests - operators' }
 PythonConversionTest >> testIsNot [
-	"Ensure an addition expression can be converted to Zag properly."
+	"Ensure an 'is not' expression can be converted to Zag properly.  Separate because it is a two-word operator."
 	| expected actual source root node |
 	source := 'a is not b'.
 	expected := ASSend
@@ -254,7 +254,7 @@ PythonConversionTest >> testNegation [
 
 { #category : 'tests - operators' }
 PythonConversionTest >> testNotIn [
-	"Ensure an addition expression can be converted to Zag properly."
+	"Ensure a 'not in' expression can be converted to Zag properly.  Included because it has distinct semantics from 'is' and is one operator of two words."
 	| expected actual source root node |
 	source := 'a not in b'.
 	expected := ASSend
