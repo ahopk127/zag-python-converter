@@ -105,6 +105,8 @@ ZagTSNode >> binaryToZagASTOperator: op [
 	op = #!= ifTrue: [ ^self binaryToZagASTSelector: #~= ].
 	op = #is ifTrue: [ ^self binaryToZagASTSelector: #== ].
 	op = #'is not' ifTrue: [ ^self binaryToZagASTSelector: #~~ ].
+	op = #in ifTrue: [ ^ASSend target: (self >> 2) asZagASTNode selector: #includes: args: {(self >> 1) asZagASTNode} ].
+	op = #'not in' ifTrue: [ ^ASSend target: (ASSend target: (self >> 2) asZagASTNode selector: #includes: args: {(self >> 1) asZagASTNode}) selector: #not args: #() ].
 ]
 
 { #category : 'converting - by node type' }

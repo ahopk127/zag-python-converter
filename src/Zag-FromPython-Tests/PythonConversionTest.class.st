@@ -156,6 +156,22 @@ PythonConversionTest >> testFloatNode [
 	self assert: actual equals: expected.
 ]
 
+{ #category : 'tests - operators' }
+PythonConversionTest >> testIn [
+	"Ensure an addition expression can be converted to Zag properly."
+	| expected actual source root node |
+	source := 'a in b'.
+	expected := ASSend
+		target: (ASRef variable: #b)
+		selector: #includes:
+		args: {ASRef variable: #a}.
+	
+	root := ZagTSNode newRoot: source.
+	node := root >> 1.
+	actual := node asZagASTNode.
+	self assert: actual equals: expected.
+]
+
 { #category : 'tests - literals' }
 PythonConversionTest >> testIntegerNode [
 	"Ensure a variable can be converted to Zag properly."
@@ -229,6 +245,24 @@ PythonConversionTest >> testNegation [
 		target: (ASRef variable: #a)
 		selector: #negated
 		args: #().
+	
+	root := ZagTSNode newRoot: source.
+	node := root >> 1.
+	actual := node asZagASTNode.
+	self assert: actual equals: expected.
+]
+
+{ #category : 'tests - operators' }
+PythonConversionTest >> testNotIn [
+	"Ensure an addition expression can be converted to Zag properly."
+	| expected actual source root node |
+	source := 'a not in b'.
+	expected := ASSend
+		target: (ASSend
+			target: (ASRef variable: #b)
+			selector: #includes:
+			args: {ASRef variable: #a})
+		selector: #not args: {}.
 	
 	root := ZagTSNode newRoot: source.
 	node := root >> 1.
