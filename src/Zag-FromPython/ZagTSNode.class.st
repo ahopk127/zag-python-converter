@@ -25,6 +25,9 @@ ZagTSNode class >> converter: type [
 	type = #'unary_operator' ifTrue: [ ^#unaryToZagAST ].
 	type = #'binary_operator' ifTrue: [ ^#binaryToZagAST ].
 	type = #'boolean_operator' ifTrue: [ ^#booleanToZagAST ].
+	type = #assignment ifTrue: [ ^#assignToZagAST ].
+	type = #'augmented_assignment' ifTrue: [ ^#augmentedAssignToZagAST ].
+	type = #'named_expression' ifTrue: [ ^#assignToZagAST ]. ":= - temp - should have different semantics later"
 ]
 
 { #category : 'instance creation' }
@@ -68,22 +71,40 @@ ZagTSNode >> asZagASTNode [
 ]
 
 { #category : 'converting - by node type' }
+ZagTSNode >> assignToZagAST [
+	^ASAssign variable: (self >> 1) asZagASTNode expression: (self >> 2) asZagASTNode.
+]
+
+{ #category : 'converting - by node type' }
+ZagTSNode >> augmentedAssignToZagAST [
+	| op nonAugmentedOp |
+	op := self getBinaryOperator.
+	nonAugmentedOp := (op asString copyFrom: 1 to: (op asString size - 1)) asSymbol.
+	^ASAssign variable: (self >> 1) asZagASTNode expression: (self binaryToZagASTOperator: nonAugmentedOp).
+]
+
+{ #category : 'converting - by node type' }
 ZagTSNode >> binaryToZagAST [
 	"Converts a binary operator to a Zag AST."
 	| op |
 	op := self getBinaryOperator.
-	
-	(#(#+ #- #* #/ #// #% #& #|) includes: op) ifTrue: [ ^self binaryToZagAST: op ].
-	op = #** ifTrue: [ ^self binaryToZagAST: #raisedTo: ].
-	op = #'^' ifTrue: [ ^self binaryToZagAST: #bitXor: ].
-	op = #<< ifTrue: [ ^self binaryToZagAST: #bitShift: ].
-	op = #>> ifTrue:
-		[ ^ASSend target: (self >> 1) asZagASTNode selector: #bitShift: args: {
-			ASSend target: (self >> 2) asZagASTNode selector: #negated args: #() } ].
+	^self binaryToZagASTOperator: op.
 ]
 
 { #category : 'converting - by node type' }
-ZagTSNode >> binaryToZagAST: selector [
+ZagTSNode >> binaryToZagASTOperator: op [
+	"Creates a binary zag AST from this node's children using the provided Python operator."
+	(#(#+ #- #* #/ #// #% #& #|) includes: op) ifTrue: [ ^self binaryToZagASTSelector: op ].
+	op = #** ifTrue: [ ^self binaryToZagASTSelector: #raisedTo: ].
+	op = #'^' ifTrue: [ ^self binaryToZagASTSelector: #bitXor: ].
+	op = #<< ifTrue: [ ^self binaryToZagASTSelector: #bitShift: ].
+	op = #>> ifTrue:
+		[ ^ASSend target: (self >> 1) asZagASTNode selector: #bitShift: args: {
+			ASSend target: (self >> 2) asZagASTNode selector: #negated args: #() } ]. 
+]
+
+{ #category : 'converting - by node type' }
+ZagTSNode >> binaryToZagASTSelector: selector [
 	"Creates a binary zag AST from this node's children using the provided selector."
 	^ASSend target: (self >> 1) asZagASTNode selector: selector args: {(self >> 2) asZagASTNode}.
 ]

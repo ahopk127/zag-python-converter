@@ -44,6 +44,39 @@ PythonConversionTest >> testAndOrOperator [
 ]
 
 { #category : 'tests - operators' }
+PythonConversionTest >> testAssign [
+	"Ensure an addition expression can be converted to Zag properly."
+	| expected actual source root node |
+	source := 'a = b'.
+	expected := ASAssign
+		variable: (ASRef variable: #a)
+		expression: (ASRef variable: #b).
+	
+	root := ZagTSNode newRoot: source.
+	node := root >> 1.
+	actual := node asZagASTNode.
+	self assert: actual equals: expected.
+]
+
+{ #category : 'tests - operators' }
+PythonConversionTest >> testAssignPlus [
+	"Ensure an addition expression can be converted to Zag properly."
+	| expected actual source root node |
+	source := 'a += b'.
+	expected := ASAssign
+		variable: (ASRef variable: #a)
+		expression: (ASSend
+			target: (ASRef variable: #a)
+			selector: #+
+			args: { ASRef variable: #b }).
+	
+	root := ZagTSNode newRoot: source.
+	node := root >> 1.
+	actual := node asZagASTNode.
+	self assert: actual equals: expected.
+]
+
+{ #category : 'tests - operators' }
 PythonConversionTest >> testBitShiftLeft [
 	"Ensure an addition expression can be converted to Zag properly."
 	| expected actual source root node |
