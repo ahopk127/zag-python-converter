@@ -7,12 +7,13 @@ Class {
 }
 
 { #category : 'text - helpers' }
-PythonConversionTest >> assertSource: source convertsTo: expected [
+PythonConversionTest >> assertExpression: source convertsTo: tree [
 	"Asserts the provided Python code converts to the provided AST."
-	| root node actual |
+	"Puts the provided AST in a main method."
+	| root expected actual |
 	root := ZagTSNode newRoot: source.
-	node := root >> 1.
-	actual := node asZagASTNode.
+	actual := root asZagASTNode.
+	expected := ASMethodNode selector: ZagTSNode mainMethodSelector body: {tree}.
 	self assert: actual equals: expected.
 ]
 
@@ -25,7 +26,7 @@ PythonConversionTest >> testAddition [
 		target: (ASRef variable: #a)
 		selector: #+
 		args: {ASRef variable: #b}.
-	self assertSource: source convertsTo: expected.
+	self assertExpression: source convertsTo: expected.
 ]
 
 { #category : 'tests - operators' }
@@ -42,7 +43,7 @@ PythonConversionTest >> testAndOrOperator [
 		selector: #pythonOr:
 		args: {ASBlockNode
 			arguments: #() locals: #() body: { ASRef variable: #c }}.
-	self assertSource: source convertsTo: expected.
+	self assertExpression: source convertsTo: expected.
 ]
 
 { #category : 'tests - assignment' }
@@ -53,7 +54,7 @@ PythonConversionTest >> testAssign [
 	expected := ASAssign
 		variable: (ASRef variable: #a)
 		expression: (ASRef variable: #b).
-	self assertSource: source convertsTo: expected.
+	self assertExpression: source convertsTo: expected.
 ]
 
 { #category : 'tests - assignment' }
@@ -67,7 +68,7 @@ PythonConversionTest >> testAssignPlus [
 			target: (ASRef variable: #a)
 			selector: #+
 			args: { ASRef variable: #b }).
-	self assertSource: source convertsTo: expected.
+	self assertExpression: source convertsTo: expected.
 ]
 
 { #category : 'tests - operators' }
@@ -79,7 +80,7 @@ PythonConversionTest >> testBitShiftLeft [
 		target: (ASRef variable: #a)
 		selector: #bitShift:
 		args: {ASRef variable: #b}.
-	self assertSource: source convertsTo: expected.
+	self assertExpression: source convertsTo: expected.
 ]
 
 { #category : 'tests - operators' }
@@ -94,7 +95,7 @@ PythonConversionTest >> testBitShiftRight [
 			target: (ASRef variable: #b)
 			selector: #negated
 			args: #()}.
-	self assertSource: source convertsTo: expected.
+	self assertExpression: source convertsTo: expected.
 ]
 
 { #category : 'tests - comparison & membership operators' }
@@ -106,7 +107,7 @@ PythonConversionTest >> testComparison [
 		target: (ASRef variable: #a)
 		selector: #>
 		args: {ASRef variable: #b}.
-	self assertSource: source convertsTo: expected.
+	self assertExpression: source convertsTo: expected.
 ]
 
 { #category : 'tests - comparison & membership operators' }
@@ -118,7 +119,7 @@ PythonConversionTest >> testEquals [
 		target: (ASRef variable: #a)
 		selector: #=
 		args: {ASRef variable: #b}.
-	self assertSource: source convertsTo: expected.
+	self assertExpression: source convertsTo: expected.
 ]
 
 { #category : 'tests - literals' }
@@ -127,7 +128,7 @@ PythonConversionTest >> testFloatNode [
 	| expected source |
 	source := '2.0'.
 	expected := ASLiteral literal: 2.0.
-	self assertSource: source convertsTo: expected.
+	self assertExpression: source convertsTo: expected.
 ]
 
 { #category : 'tests - comparison & membership operators' }
@@ -139,7 +140,7 @@ PythonConversionTest >> testIn [
 		target: (ASRef variable: #b)
 		selector: #includes:
 		args: {ASRef variable: #a}.
-	self assertSource: source convertsTo: expected.
+	self assertExpression: source convertsTo: expected.
 ]
 
 { #category : 'tests - literals' }
@@ -148,7 +149,7 @@ PythonConversionTest >> testIntegerNode [
 	| expected source |
 	source := '2'.
 	expected := ASLiteral literal: 2.
-	self assertSource: source convertsTo: expected.
+	self assertExpression: source convertsTo: expected.
 ]
 
 { #category : 'tests - comparison & membership operators' }
@@ -160,7 +161,7 @@ PythonConversionTest >> testIs [
 		target: (ASRef variable: #a)
 		selector: #==
 		args: {ASRef variable: #b}.
-	self assertSource: source convertsTo: expected.
+	self assertExpression: source convertsTo: expected.
 ]
 
 { #category : 'tests - comparison & membership operators' }
@@ -172,7 +173,7 @@ PythonConversionTest >> testIsNot [
 		target: (ASRef variable: #a)
 		selector: #~~
 		args: {ASRef variable: #b}.
-	self assertSource: source convertsTo: expected.
+	self assertExpression: source convertsTo: expected.
 ]
 
 { #category : 'tests - operators' }
@@ -187,7 +188,7 @@ PythonConversionTest >> testMultiOperators [
 			target: (ASRef variable: #b)
 			selector: #*
 			args: {ASRef variable: #c}}.
-	self assertSource: source convertsTo: expected.
+	self assertExpression: source convertsTo: expected.
 ]
 
 { #category : 'tests - operators' }
@@ -199,7 +200,7 @@ PythonConversionTest >> testNegation [
 		target: (ASRef variable: #a)
 		selector: #negated
 		args: #().
-	self assertSource: source convertsTo: expected.
+	self assertExpression: source convertsTo: expected.
 ]
 
 { #category : 'tests - comparison & membership operators' }
@@ -213,7 +214,7 @@ PythonConversionTest >> testNotIn [
 			selector: #includes:
 			args: {ASRef variable: #a})
 		selector: #not args: {}.
-	self assertSource: source convertsTo: expected.
+	self assertExpression: source convertsTo: expected.
 ]
 
 { #category : 'tests - operators' }
@@ -222,7 +223,7 @@ PythonConversionTest >> testNotOperator [
 	| expected source |
 	source := 'not a'.
 	expected := ASSend target: (ASRef variable: #a) selector: #pythonNot.
-	self assertSource: source convertsTo: expected.
+	self assertExpression: source convertsTo: expected.
 ]
 
 { #category : 'tests - operators' }
@@ -234,7 +235,7 @@ PythonConversionTest >> testPowers [
 		target: (ASRef variable: #a)
 		selector: #raisedTo:
 		args: {ASRef variable: #b}.
-	self assertSource: source convertsTo: expected.
+	self assertExpression: source convertsTo: expected.
 ]
 
 { #category : 'tests - literals' }
@@ -243,7 +244,7 @@ PythonConversionTest >> testStringNode [
 	| expected source |
 	source := '"a"'.
 	expected := ASLiteral literal: 'a'.
-	self assertSource: source convertsTo: expected.
+	self assertExpression: source convertsTo: expected.
 ]
 
 { #category : 'tests' }
@@ -252,7 +253,7 @@ PythonConversionTest >> testVariableNode [
 	| expected source |
 	source := 'a'.
 	expected := ASRef variable: #a.
-	self assertSource: source convertsTo: expected.
+	self assertExpression: source convertsTo: expected.
 ]
 
 { #category : 'tests - assignment' }
@@ -263,5 +264,5 @@ PythonConversionTest >> testWalrus [
 	expected := ASAssign
 		variable: (ASRef variable: #a)
 		expression: (ASRef variable: #b).
-	self assertSource: source convertsTo: expected.
+	self assertExpression: source convertsTo: expected.
 ]

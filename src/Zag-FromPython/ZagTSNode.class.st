@@ -19,6 +19,7 @@ ZagTSNode class >> converter: type [
 	"This function should accept the ZagTSNode and return a Zag AST object."
 	type = #identifier ifTrue: [ ^#identifierToZagAST ].
 	type = #'expression_statement' ifTrue: [ ^#childToZagAST ].
+	type = #module ifTrue: [ ^#moduleToZagAST ].
 	type = #string ifTrue: [ ^#stringToZagAST ].
 	(#(#integer #float) includes: type) ifTrue: [ ^#numberToZagAST ].
 	type = #'not_operator' ifTrue: [ ^#notToZagAST ].
@@ -28,6 +29,12 @@ ZagTSNode class >> converter: type [
 	type = #assignment ifTrue: [ ^#assignToZagAST ].
 	type = #'augmented_assignment' ifTrue: [ ^#augmentedAssignToZagAST ].
 	type = #'named_expression' ifTrue: [ ^#assignToZagAST ]. ":= - temp - should have different semantics later"
+]
+
+{ #category : 'constants' }
+ZagTSNode class >> mainMethodSelector [
+	"The selector used for the main method, where non-method code is put in."
+	^#main.
 ]
 
 { #category : 'instance creation' }
@@ -156,6 +163,15 @@ ZagTSNode >> getUnaryOperator [
 ZagTSNode >> identifierToZagAST [
 	"Converts me to a Zag AST, assuming I am an identifier."
 	^ASRef variable: self sourcePart asSymbol.
+]
+
+{ #category : 'converting - by node type' }
+ZagTSNode >> moduleToZagAST [
+	"Converts a module to a #main method."
+	| children |
+	children := (1 to: node namedChildCount)
+		collect: [ :i | (self >> i) asZagASTNode ].
+	^ASMethodNode selector: self class mainMethodSelector body: children.
 ]
 
 { #category : 'converting - by node type' }
