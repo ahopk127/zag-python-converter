@@ -8,7 +8,7 @@ This project is currently in the early stages of development; don't expect every
 
 To convert Python code to a Zag AST:
 ```
-((ZagTSNode newRoot: '[PYTHON CODE]') >> 1) asZagASTNode
+ZagTSNode pythonToZagAST: '[PYTHON CODE]'
 ```
 
 ## Dependencies
