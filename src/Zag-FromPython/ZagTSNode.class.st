@@ -53,6 +53,12 @@ ZagTSNode class >> newRoot: source [
 	^root.
 ]
 
+{ #category : 'converting' }
+ZagTSNode class >> pythonToZagAST: source [
+	"Converts the provided code to a Zag AST node."
+	^(self newRoot: source) asZagASTNode.
+]
+
 { #category : 'accessing' }
 ZagTSNode >> >> n [
 	"Returns the nth child of this node, as a ZagTSNode."

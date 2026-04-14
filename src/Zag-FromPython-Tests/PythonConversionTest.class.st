@@ -10,10 +10,9 @@ Class {
 PythonConversionTest >> assertExpression: source convertsTo: tree [
 	"Asserts the provided Python code converts to the provided AST."
 	"Puts the provided AST in a main method."
-	| root expected actual |
-	root := ZagTSNode newRoot: source.
-	actual := root asZagASTNode.
+	| expected actual |
 	expected := ASMethodNode selector: ZagTSNode mainMethodSelector body: {tree}.
+	actual := ZagTSNode pythonToZagAST: source.
 	self assert: actual equals: expected.
 ]
 
