@@ -39,18 +39,22 @@ ZagTSNode class >> mainMethodSelector [
 
 { #category : 'instance creation' }
 ZagTSNode class >> newRoot: source [
-	"comment stating purpose of class-side method"
-	"scope: class-variables  &  class-instance-variables"
-
-	| parser pythonLanguage tree root |
-	parser := TSParser new.
-	pythonLanguage := TSLanguage python.
-	parser language: pythonLanguage.
-	tree := parser parseString: source.
-	
+	"Creates a new root node from the provided Python source."
+	| tree root |
+	tree := self parsePythonTS: source.
 	root := self new.
 	root setNode: tree rootNode source: source.
 	^root.
+]
+
+{ #category : 'instance creation' }
+ZagTSNode class >> parsePythonTS: source [
+	"Parses Python code with TreeSitter."
+	| parser pythonLanguage |
+	parser := TSParser new.
+	pythonLanguage := TSLanguage python.
+	parser language: pythonLanguage.
+	^parser parseString: source.
 ]
 
 { #category : 'converting' }
