@@ -29,6 +29,7 @@ ZagTSNode class >> converter: type [
 	type = #assignment ifTrue: [ ^#assignToZagAST ].
 	type = #'augmented_assignment' ifTrue: [ ^#augmentedAssignToZagAST ].
 	type = #'named_expression' ifTrue: [ ^#assignToZagAST ]. ":= - temp - should have different semantics later"
+	type = #lambda ifTrue: [ ^#lambdaToZagAST ].
 ]
 
 { #category : 'constants' }
@@ -190,6 +191,18 @@ ZagTSNode >> getUnaryOperator [
 ZagTSNode >> identifierToZagAST [
 	"Converts me to a Zag AST, assuming I am an identifier."
 	^ASRef variable: self sourcePart asSymbol.
+]
+
+{ #category : 'converting - by node type' }
+ZagTSNode >> lambdaToZagAST [
+	"Converts me to a Zag AST, assuming I am a lambda."
+	| hasArguments arguments bodyStart |
+	self childrenCount < 1 ifTrue: [ self error: 'invalid lambda w/o children' ].
+	hasArguments := (self >> 1) tsNodeType = #lambda_parameters.
+	arguments := hasArguments ifTrue: [ (self >> 1) children collect: #asZagASTNode ] ifFalse: [ #() ].
+	bodyStart := hasArguments ifTrue: [ 2 ] ifFalse: [ 1 ].
+	^ASBlockNode arguments: arguments locals: #()
+			body: ((bodyStart to: self childrenCount) collect: [:i | (self >> i) asZagASTNode ]).
 ]
 
 { #category : 'converting - by node type' }

@@ -175,6 +175,39 @@ PythonConversionTest >> testIsNot [
 	self assertExpression: source convertsTo: expected.
 ]
 
+{ #category : 'tests - functions' }
+PythonConversionTest >> testLambda0Arg [
+	| source expected |
+	source := 'lambda: 1'.
+	expected := ASBlockNode
+		arguments: #()
+		locals: #()
+		body: { ASLiteral literal: 1 }.
+	self assertExpression: source convertsTo: expected.
+]
+
+{ #category : 'tests - functions' }
+PythonConversionTest >> testLambda1Arg [
+	| source expected |
+	source := 'lambda x: x + 1'.
+	expected := ASBlockNode
+		arguments: { ASRef variable: #x }
+		locals: #()
+		body: { ASSend target: (ASRef variable: #x) selector: #+ args: { ASLiteral literal: 1 }}.
+	self assertExpression: source convertsTo: expected.
+]
+
+{ #category : 'tests - functions' }
+PythonConversionTest >> testLambda2Arg [
+	| source expected |
+	source := 'lambda a, b: a * b'.
+	expected := ASBlockNode
+		arguments: { (ASRef variable: #a) . (ASRef variable: #b) }
+		locals: #()
+		body: { ASSend target: (ASRef variable: #a) selector: #* args: { ASRef variable: #b }}.
+	self assertExpression: source convertsTo: expected.
+]
+
 { #category : 'tests - operators' }
 PythonConversionTest >> testMultiOperators [
 	"Ensure an expression with multiple operators can be converted to Zag properly."
