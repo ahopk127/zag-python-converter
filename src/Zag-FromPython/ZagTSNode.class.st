@@ -67,7 +67,7 @@ ZagTSNode class >> pythonToZagAST: source [
 
 { #category : 'constants' }
 ZagTSNode class >> supportedBuiltins [
-	^#(#print).
+	^#(#print #input).
 ]
 
 { #category : 'accessing' }
@@ -158,6 +158,7 @@ ZagTSNode >> builtinToZagAST [
 	| name |
 	name := (self >> 1) sourcePart asSymbol.
 	name = #print ifTrue: [ ^self printToZagAST ].
+	name = #input ifTrue: [ ^self inputToZagAST ].
 ]
 
 { #category : 'converting - by node type' }
@@ -213,6 +214,14 @@ ZagTSNode >> getUnaryOperator [
 ZagTSNode >> identifierToZagAST [
 	"Converts me to a Zag AST, assuming I am an identifier."
 	^ASRef variable: self sourcePart asSymbol.
+]
+
+{ #category : 'converting - by node type' }
+ZagTSNode >> inputToZagAST [
+	^ASSend
+		target: (ASSend target: UIManager selector: #default args: #())
+		selector: #request:
+		args: { (self >> 2 >> 1) asZagASTNode }.
 ]
 
 { #category : 'converting - by node type' }

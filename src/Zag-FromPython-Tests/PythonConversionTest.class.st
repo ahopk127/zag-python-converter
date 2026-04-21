@@ -142,6 +142,17 @@ PythonConversionTest >> testIn [
 	self assertExpression: source convertsTo: expected.
 ]
 
+{ #category : 'tests - functions' }
+PythonConversionTest >> testInputCall [
+	| source expected |
+	source := 'input(a)'.
+	expected := ASSend
+		target: (ASSend target: UIManager selector: #default args: #())
+		selector: #request:
+		args: { ASRef variable: #a }.
+	self assertExpression: source convertsTo: expected.
+]
+
 { #category : 'tests - literals' }
 PythonConversionTest >> testIntegerNode [
 	"Ensure a variable can be converted to Zag properly."
