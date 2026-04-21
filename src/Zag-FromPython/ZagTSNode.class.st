@@ -30,6 +30,7 @@ ZagTSNode class >> converter: type [
 	type = #'augmented_assignment' ifTrue: [ ^#augmentedAssignToZagAST ].
 	type = #'named_expression' ifTrue: [ ^#assignToZagAST ]. ":= - temp - should have different semantics later"
 	type = #lambda ifTrue: [ ^#lambdaToZagAST ].
+	type = #call ifTrue: [ ^#callToZagAST ].
 ]
 
 { #category : 'constants' }
@@ -62,6 +63,11 @@ ZagTSNode class >> parsePythonTS: source [
 ZagTSNode class >> pythonToZagAST: source [
 	"Converts the provided code to a Zag AST node."
 	^(self newRoot: source) asZagASTNode.
+]
+
+{ #category : 'constants' }
+ZagTSNode class >> supportedBuiltins [
+	^#(#print).
 ]
 
 { #category : 'accessing' }
@@ -147,6 +153,22 @@ ZagTSNode >> booleanToZagAST [
 ]
 
 { #category : 'converting - by node type' }
+ZagTSNode >> builtinToZagAST [
+	"Converts a builtin method to a Zag AST."
+	| name |
+	name := (self >> 1) sourcePart asSymbol.
+	name = #print ifTrue: [ ^self printToZagAST ].
+]
+
+{ #category : 'converting - by node type' }
+ZagTSNode >> callToZagAST [
+	"Converts a function call to a Zag AST."
+	(self class supportedBuiltins includes: (self >> 1) sourcePart asSymbol)
+		ifTrue: [ ^self builtinToZagAST ]
+		ifFalse: [ self error ].
+]
+
+{ #category : 'converting - by node type' }
 ZagTSNode >> childToZagAST [
 	"Returns my first child as a Zag AST."
 	^(self >> 1) asZagASTNode.
@@ -225,6 +247,15 @@ ZagTSNode >> notToZagAST [
 ZagTSNode >> numberToZagAST [
 	"Converts a number to a Zag AST."
 	^ASLiteral literal: self sourcePart asNumber.
+]
+
+{ #category : 'converting - by node type' }
+ZagTSNode >> printToZagAST [
+	| calls |
+	calls := (self >> 2) children collect: [ :each |
+		ASSend selector: #show: args: { each asZagASTNode } ].
+	^ASCascade target: Transcript sends: (calls copyWith: (
+		ASSend selector: #cr args: #())).
 ]
 
 { #category : 'initialization' }

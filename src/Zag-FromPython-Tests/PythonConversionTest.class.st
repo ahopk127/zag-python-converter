@@ -270,6 +270,17 @@ PythonConversionTest >> testPowers [
 	self assertExpression: source convertsTo: expected.
 ]
 
+{ #category : 'tests - functions' }
+PythonConversionTest >> testPrintCall [
+	| source expected |
+	source := 'print(a)'.
+	expected := ASCascade target: Transcript sends: {
+		ASSend selector: #show: args: { ASRef variable: #a } .
+		ASSend selector: #cr args: #().
+	}.
+	self assertExpression: source convertsTo: expected.
+]
+
 { #category : 'tests - literals' }
 PythonConversionTest >> testStringNode [
 	"Ensure a variable can be converted to Zag properly."
