@@ -151,6 +151,23 @@ ZagTSNode >> childToZagAST [
 	^(self >> 1) asZagASTNode.
 ]
 
+{ #category : 'accessing' }
+ZagTSNode >> children [
+	"Returns my children as a collection."
+	^(1 to: self childrenCount) collect: [ :i | self >> i ].
+]
+
+{ #category : 'accessing' }
+ZagTSNode >> childrenCount [
+	^node namedChildCount.
+]
+
+{ #category : 'accessing' }
+ZagTSNode >> childrenDo: aBlock [
+	"Runs aBlock once for each of my children."
+	1 to: self childrenCount do: [ :i | aBlock value: (self >> i) ].
+]
+
 { #category : 'computing' }
 ZagTSNode >> getBinaryOperator [
 	"If I represent a binary operator, return the operator I represent."
