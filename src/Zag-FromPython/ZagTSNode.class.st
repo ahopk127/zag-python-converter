@@ -97,7 +97,14 @@ ZagTSNode >> asZagASTNode [
 
 { #category : 'converting - by node type' }
 ZagTSNode >> assignToZagAST [
-	^ASAssign variable: (self >> 1) asZagASTNode expression: (self >> 2) asZagASTNode.
+	^(self >> 1) tsNodeType = #subscript
+		ifTrue: [ ASSend
+			target: (self >> 1 >> 1) asZagASTNode 
+			selector: #zAt:put:
+			args: { (self >> 1 >> 2) asZagASTNode . (self >> 2) asZagASTNode }.
+		] ifFalse: [
+			ASAssign variable: (self >> 1) asZagASTNode expression: (self >> 2) asZagASTNode
+		].
 ]
 
 { #category : 'converting - by node type' }
@@ -105,7 +112,20 @@ ZagTSNode >> augmentedAssignToZagAST [
 	| op nonAugmentedOp |
 	op := self getBinaryOperator.
 	nonAugmentedOp := (op asString copyFrom: 1 to: (op asString size - 1)) asSymbol.
-	^ASAssign variable: (self >> 1) asZagASTNode expression: (self binaryToZagASTOperator: nonAugmentedOp).
+	^(self >> 1) tsNodeType = #subscript
+		ifTrue: [ ASSend
+			target: (self >> 1 >> 1) asZagASTNode 
+			selector: #zAt:put:
+			args: { (self >> 1 >> 2) asZagASTNode . ASSend
+				target: (ASSend
+					target: (self >> 1 >> 1) asZagASTNode 
+					selector: #zAt:
+					args: { (self >> 1 >> 2) asZagASTNode })
+				selector: nonAugmentedOp
+				args: { (self >> 2) asZagASTNode } }.
+		] ifFalse: [
+			ASAssign variable: (self >> 1) asZagASTNode expression: (self binaryToZagASTOperator: nonAugmentedOp)
+		].
 ]
 
 { #category : 'converting - by node type' }

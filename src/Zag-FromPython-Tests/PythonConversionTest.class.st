@@ -57,6 +57,38 @@ PythonConversionTest >> testArrayAccess [
 ]
 
 { #category : 'tests - assignment' }
+PythonConversionTest >> testArrayAssign [
+	"Ensure an assignment expression can be converted to Zag properly."
+	| expected source |
+	source := 'a[b] = c'.
+	expected := ASSend
+		target: (ASRef variable: #a)
+		selector: #zAt:put:
+		args: { ASRef variable: #b . ASRef variable: #c }.
+	self assertExpression: source convertsTo: expected.
+]
+
+{ #category : 'tests - assignment' }
+PythonConversionTest >> testArrayAssignPlus [
+	"Ensure an augmented assignment expression (+=) can be converted to Zag properly."
+	| expected source |
+	source := 'a[b] += c'.
+	expected := ASSend
+		target: (ASRef variable: #a)
+		selector: #zAt:put:
+		args: { ASRef variable: #b . ASSend
+			target: (ASSend
+				target: (ASRef variable: #a)
+				selector: #zAt:
+				args: { ASRef variable: #b }
+			)
+			selector: #+
+			args: { ASRef variable: #c }
+		}.
+	self assertExpression: source convertsTo: expected.
+]
+
+{ #category : 'tests - assignment' }
 PythonConversionTest >> testAssign [
 	"Ensure an assignment expression can be converted to Zag properly."
 	| expected source |
