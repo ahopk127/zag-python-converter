@@ -29,6 +29,7 @@ ZagTSNode class >> converter: type [
 	type = #assignment ifTrue: [ ^#assignToZagAST ].
 	type = #'augmented_assignment' ifTrue: [ ^#augmentedAssignToZagAST ].
 	type = #'named_expression' ifTrue: [ ^#assignToZagAST ]. ":= - temp - should have different semantics later"
+	type = #'subscript' ifTrue: [ ^#subscriptToZagAST ].
 	type = #lambda ifTrue: [ ^#lambdaToZagAST ].
 	type = #call ifTrue: [ ^#callToZagAST ].
 ]
@@ -289,6 +290,14 @@ ZagTSNode >> sourcePart [
 ZagTSNode >> stringToZagAST [
 	"Converts a string to a Zag AST."
 	^ASLiteral literal: (self >> 2) sourcePart.
+]
+
+{ #category : 'converting - by node type' }
+ZagTSNode >> subscriptToZagAST [
+	^ASSend
+		target: (self >> 1) asZagASTNode
+		selector: #zAt:
+		args: { (self >> 2) asZagASTNode }.
 ]
 
 { #category : 'accessing' }

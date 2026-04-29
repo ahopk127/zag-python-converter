@@ -45,6 +45,17 @@ PythonConversionTest >> testAndOrOperator [
 	self assertExpression: source convertsTo: expected.
 ]
 
+{ #category : 'tests' }
+PythonConversionTest >> testArrayAccess [
+	"Ensures an array access (i.e. array[index]) translates properly."
+	| expected |
+	expected := ASSend
+		target: (ASRef variable: #a)
+		selector: #zAt:
+		args: { ASRef variable: #b }.
+	self assertExpression: 'a[b]' convertsTo: expected.
+]
+
 { #category : 'tests - assignment' }
 PythonConversionTest >> testAssign [
 	"Ensure an assignment expression can be converted to Zag properly."
