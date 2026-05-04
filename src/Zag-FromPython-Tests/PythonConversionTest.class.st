@@ -51,7 +51,7 @@ PythonConversionTest >> testArrayAccess [
 	| expected |
 	expected := ASSend
 		target: (ASRef variable: #a)
-		selector: #zAt:
+		selector: #zwAt:
 		args: { ASRef variable: #b }.
 	self assertExpression: 'a[b]' convertsTo: expected.
 ]
@@ -63,7 +63,7 @@ PythonConversionTest >> testArrayAssign [
 	source := 'a[b] = c'.
 	expected := ASSend
 		target: (ASRef variable: #a)
-		selector: #zAt:put:
+		selector: #zwAt:put:
 		args: { ASRef variable: #b . ASRef variable: #c }.
 	self assertExpression: source convertsTo: expected.
 ]
@@ -75,11 +75,11 @@ PythonConversionTest >> testArrayAssignPlus [
 	source := 'a[b] += c'.
 	expected := ASSend
 		target: (ASRef variable: #a)
-		selector: #zAt:put:
+		selector: #zwAt:put:
 		args: { ASRef variable: #b . ASSend
 			target: (ASSend
 				target: (ASRef variable: #a)
-				selector: #zAt:
+				selector: #zwAt:
 				args: { ASRef variable: #b }
 			)
 			selector: #+

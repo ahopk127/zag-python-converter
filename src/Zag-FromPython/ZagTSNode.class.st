@@ -100,7 +100,7 @@ ZagTSNode >> assignToZagAST [
 	^(self >> 1) tsNodeType = #subscript
 		ifTrue: [ ASSend
 			target: (self >> 1 >> 1) asZagASTNode 
-			selector: #zAt:put:
+			selector: #zwAt:put:
 			args: { (self >> 1 >> 2) asZagASTNode . (self >> 2) asZagASTNode }.
 		] ifFalse: [
 			ASAssign variable: (self >> 1) asZagASTNode expression: (self >> 2) asZagASTNode
@@ -115,11 +115,11 @@ ZagTSNode >> augmentedAssignToZagAST [
 	^(self >> 1) tsNodeType = #subscript
 		ifTrue: [ ASSend
 			target: (self >> 1 >> 1) asZagASTNode 
-			selector: #zAt:put:
+			selector: #zwAt:put:
 			args: { (self >> 1 >> 2) asZagASTNode . ASSend
 				target: (ASSend
 					target: (self >> 1 >> 1) asZagASTNode 
-					selector: #zAt:
+					selector: #zwAt:
 					args: { (self >> 1 >> 2) asZagASTNode })
 				selector: nonAugmentedOp
 				args: { (self >> 2) asZagASTNode } }.
@@ -316,7 +316,7 @@ ZagTSNode >> stringToZagAST [
 ZagTSNode >> subscriptToZagAST [
 	^ASSend
 		target: (self >> 1) asZagASTNode
-		selector: #zAt:
+		selector: #zwAt:
 		args: { (self >> 2) asZagASTNode }.
 ]
 
