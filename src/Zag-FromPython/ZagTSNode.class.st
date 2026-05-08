@@ -24,7 +24,7 @@ ZagTSNode class >> converter: type [
 	"Returns the conversion function for a node of the given type (symbol)."
 	"This function should accept the ZagTSNode and return a Zag AST object."
 	type = #identifier ifTrue: [ ^#identifierToZagAST ].
-	type = #'expression_statement' ifTrue: [ ^#childToZagAST ].
+	(#(#'expression_statement' #'parenthesized_expression') includes: type) ifTrue: [ ^#childToZagAST ].
 	type = #module ifTrue: [ ^#moduleToZagAST ].
 	type = #string ifTrue: [ ^#stringToZagAST ].
 	(#(#integer #float) includes: type) ifTrue: [ ^#numberToZagAST ].
