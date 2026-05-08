@@ -16,6 +16,16 @@ PythonConversionTest >> assertExpression: source convertsTo: tree [
 	self assert: actual equals: expected.
 ]
 
+{ #category : 'text - helpers' }
+PythonConversionTest >> assertExpression: source convertsTo: tree withLocals: locals [
+	"Asserts the provided Python code converts to the provided AST."
+	"Puts the provided AST in a main method."
+	| expected actual |
+	expected := ASMethodNode selector: ZagTSNode mainMethodSelector locals: (locals collect: [:each | ASRef variable: each]) body: {tree}.
+	actual := ZagTSNode pythonToZagAST: source.
+	self assert: actual equals: expected.
+]
+
 { #category : 'tests - operators' }
 PythonConversionTest >> testAddition [
 	"Ensure an addition expression can be converted to Zag properly."
@@ -96,7 +106,7 @@ PythonConversionTest >> testAssign [
 	expected := ASAssign
 		variable: (ASRef variable: #a)
 		expression: (ASRef variable: #b).
-	self assertExpression: source convertsTo: expected.
+	self assertExpression: source convertsTo: expected withLocals: #(#a).
 ]
 
 { #category : 'tests - assignment' }
@@ -110,7 +120,7 @@ PythonConversionTest >> testAssignPlus [
 			target: (ASRef variable: #a)
 			selector: #+
 			args: { ASRef variable: #b }).
-	self assertExpression: source convertsTo: expected.
+	self assertExpression: source convertsTo: expected withLocals: #(#a).
 ]
 
 { #category : 'tests - operators' }
@@ -361,5 +371,5 @@ PythonConversionTest >> testWalrus [
 	expected := ASAssign
 		variable: (ASRef variable: #a)
 		expression: (ASRef variable: #b).
-	self assertExpression: source convertsTo: expected.
+	self assertExpression: source convertsTo: expected withLocals: #(#a).
 ]

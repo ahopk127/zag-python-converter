@@ -10,6 +10,13 @@ Class {
 }
 
 { #category : 'code-critics' }
+ManifestZagFromPython class >> ruleBadMessageRule2V1FalsePositive [
+
+	<ignoreForCoverage>
+	^ #(#(#(#RGMethodDefinition #(#'ZagTSNode class' #computeLocals: #true)) #'2026-05-07T15:40:21.053-05:00') )
+]
+
+{ #category : 'code-critics' }
 ManifestZagFromPython class >> ruleLongMethodsRuleV1FalsePositive [
 
 	<ignoreForCoverage>

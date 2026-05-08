@@ -13,6 +13,12 @@ Class {
 	#tag : 'AST'
 }
 
+{ #category : 'computing' }
+ZagTSNode class >> computeLocals: body [
+	"Gets the set of local variables in a collection of statements."
+	^body select: [ :each | each isKindOf: ASAssign ] thenCollect: #variable
+]
+
 { #category : 'accessing' }
 ZagTSNode class >> converter: type [
 	"Returns the conversion function for a node of the given type (symbol)."
@@ -248,22 +254,24 @@ ZagTSNode >> inputToZagAST [
 { #category : 'converting - by node type' }
 ZagTSNode >> lambdaToZagAST [
 	"Converts me to a Zag AST, assuming I am a lambda."
-	| hasArguments arguments bodyStart |
+	| hasArguments arguments bodyStart children locals |
 	self childrenCount < 1 ifTrue: [ self error: 'invalid lambda w/o children' ].
 	hasArguments := (self >> 1) tsNodeType = #lambda_parameters.
 	arguments := hasArguments ifTrue: [ (self >> 1) children collect: #asZagASTNode ] ifFalse: [ #() ].
 	bodyStart := hasArguments ifTrue: [ 2 ] ifFalse: [ 1 ].
-	^ASBlockNode arguments: arguments locals: #()
-			body: ((bodyStart to: self childrenCount) collect: [:i | (self >> i) asZagASTNode ]).
+	children := (bodyStart to: self childrenCount) collect: [:i | (self >> i) asZagASTNode ].
+	locals := self class computeLocals: children.
+	^ASBlockNode arguments: arguments locals: locals body: children.
 ]
 
 { #category : 'converting - by node type' }
 ZagTSNode >> moduleToZagAST [
 	"Converts a module to a #main method."
-	| children |
+	| children locals |
 	children := (1 to: node namedChildCount)
 		collect: [ :i | (self >> i) asZagASTNode ].
-	^ASMethodNode selector: self class mainMethodSelector body: children.
+	locals := self class computeLocals: children.
+	^ASMethodNode selector: self class mainMethodSelector locals: locals body: children.
 ]
 
 { #category : 'converting - by node type' }
