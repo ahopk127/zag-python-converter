@@ -174,6 +174,32 @@ PythonConversionTest >> testEquals [
 	self assertExpression: source convertsTo: expected.
 ]
 
+{ #category : 'tests - full programs' }
+PythonConversionTest >> testFToC [
+	"Test converting a fahrenheit-to-celsius converter"
+	| source expected actual |
+	source := 'tempF = float(input("Input temp in F: "));
+tempC = (tempF - 32) / 1.8;
+print(tempC)'.
+	expected := ASMethodNode selector: #main
+			locals: {(ASRef variable: #tempF) . (ASRef variable: #tempC)} body: {
+		ASAssign variable: (ASRef variable: #tempF) expression: (
+			ASSend target: (
+				ASSend target: (ASSend target: UIManager selector: #default args: #())
+					selector: #request: args: { ASLiteral literal: 'Input temp in F: ' }) selector: #asFloat).
+		ASAssign variable: (ASRef variable: #tempC) expression: (
+			ASSend target: (
+				ASSend target: (ASRef variable: #tempF) selector: #- args: { ASLiteral literal: 32 }
+			) selector: #/ args: { ASLiteral literal: 1.8 }).
+		ASCascade target: Transcript sends: { 
+			ASSend selector: #show: args: { ASRef variable: #tempC }.
+			ASSend selector: #cr args: #()
+		}
+	}.
+	actual := ZagTSNode pythonToZagAST: source.
+	self assert: actual equals: expected.
+]
+
 { #category : 'tests - literals' }
 PythonConversionTest >> testFloatNode [
 	"Ensure a variable can be converted to Zag properly."
