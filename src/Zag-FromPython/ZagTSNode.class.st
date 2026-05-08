@@ -74,7 +74,7 @@ ZagTSNode class >> pythonToZagAST: source [
 
 { #category : 'constants' }
 ZagTSNode class >> supportedBuiltins [
-	^#(#print #input).
+	^#(#print #input #float).
 ]
 
 { #category : 'accessing' }
@@ -186,6 +186,7 @@ ZagTSNode >> builtinToZagAST [
 	name := (self >> 1) sourcePart asSymbol.
 	name = #print ifTrue: [ ^self printToZagAST ].
 	name = #input ifTrue: [ ^self inputToZagAST ].
+	name = #float ifTrue: [ ^self floatToZagAST ].
 ]
 
 { #category : 'converting - by node type' }
@@ -217,6 +218,13 @@ ZagTSNode >> childrenCount [
 ZagTSNode >> childrenDo: aBlock [
 	"Runs aBlock once for each of my children."
 	1 to: self childrenCount do: [ :i | aBlock value: (self >> i) ].
+]
+
+{ #category : 'converting - by node type' }
+ZagTSNode >> floatToZagAST [
+	^ASSend
+		target: (self >> 2 >> 1) asZagASTNode
+		selector: #asFloat.
 ]
 
 { #category : 'computing' }
