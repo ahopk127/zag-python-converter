@@ -6,7 +6,7 @@ Class {
 	#tag : 'Tests'
 }
 
-{ #category : 'text - helpers' }
+{ #category : 'tests - helpers' }
 PythonConversionTest >> assertExpression: source convertsTo: tree [
 	"Asserts the provided Python code converts to the provided AST."
 	"Puts the provided AST in a main method."
@@ -16,7 +16,7 @@ PythonConversionTest >> assertExpression: source convertsTo: tree [
 	self assert: actual equals: expected.
 ]
 
-{ #category : 'text - helpers' }
+{ #category : 'tests - helpers' }
 PythonConversionTest >> assertExpression: source convertsTo: tree withLocals: locals [
 	"Asserts the provided Python code converts to the provided AST."
 	"Puts the provided AST in a main method."
@@ -123,6 +123,18 @@ PythonConversionTest >> testAssignPlus [
 	self assertExpression: source convertsTo: expected withLocals: #(#a).
 ]
 
+{ #category : 'tests - if statements' }
+PythonConversionTest >> testBasicIf [
+	"Tests converting an if statement without any elif or else blocks."
+	| source expected |
+	source := 'if condition:
+	x = 0'.
+	expected := ASSend target: (ASRef variable: #condition) selector: #ifTrue: args: {
+		ASBlockNode arguments: #() locals: #() body: {
+			ASAssign variable: (ASRef variable: #x) expression: (ASLiteral literal: 0)}}.
+	self assertExpression: source convertsTo: expected "withLocals: #(#x)".
+]
+
 { #category : 'tests - operators' }
 PythonConversionTest >> testBitShiftLeft [
 	"Ensure a left bit shift expression can be converted to Zag properly."
@@ -207,6 +219,64 @@ PythonConversionTest >> testFloatNode [
 	source := '2.0'.
 	expected := ASLiteral literal: 2.0.
 	self assertExpression: source convertsTo: expected.
+]
+
+{ #category : 'tests - if statements' }
+PythonConversionTest >> testIfElif [
+	"Tests converting an if statement with an elif block."
+	| source expected |
+	source := 'if condition1:
+	x = 0;
+elif condition2 == condition3:
+	x = 1;'.
+	expected := ASSend target: (ASRef variable: #condition1) selector: #ifTrue:ifFalse: args: {
+		ASBlockNode arguments: #() locals: #() body: {
+			ASAssign variable: (ASRef variable: #x) expression: (ASLiteral literal: 0)}.
+		ASSend target: (
+				ASSend target: (ASRef variable: #condition2) selector: #= args: {ASRef variable: #condition3})
+				selector: #ifTrue: args: {
+			ASBlockNode arguments: #() locals: #() body: {
+				ASAssign variable: (ASRef variable: #x) expression: (ASLiteral literal: 1)}}}.
+	self assertExpression: source convertsTo: expected "withLocals: #(#x)".
+]
+
+{ #category : 'tests - if statements' }
+PythonConversionTest >> testIfElifElse [
+	"Tests converting an if statement with an elif and else block."
+	| source expected |
+	source := 'if condition1:
+	x = 0;
+elif condition2 == condition3:
+	x = 1;
+else:
+	x = 2;'.
+	expected := ASSend target: (ASRef variable: #condition1) selector: #ifTrue:ifFalse: args: {
+		ASBlockNode arguments: #() locals: #() body: {
+			ASAssign variable: (ASRef variable: #x) expression: (ASLiteral literal: 0)}.
+		ASSend target: (
+				ASSend target: (ASRef variable: #condition2) selector: #= args: {ASRef variable: #condition3})
+				selector: #ifTrue:ifFalse: args: {
+			ASBlockNode arguments: #() locals: #() body: {
+				ASAssign variable: (ASRef variable: #x) expression: (ASLiteral literal: 1)}.
+			ASBlockNode arguments: #() locals: #() body: {
+				ASAssign variable: (ASRef variable: #x) expression: (ASLiteral literal: 2)}}}.
+	self assertExpression: source convertsTo: expected "withLocals: #(#x)".
+]
+
+{ #category : 'tests - if statements' }
+PythonConversionTest >> testIfElse [
+	"Tests converting an if statement with an else block."
+	| source expected |
+	source := 'if condition:
+	x = 0;
+else:
+	x = 1;'.
+	expected := ASSend target: (ASRef variable: #condition) selector: #ifTrue:ifFalse: args: {
+		ASBlockNode arguments: #() locals: #() body: {
+			ASAssign variable: (ASRef variable: #x) expression: (ASLiteral literal: 0)}.
+		ASBlockNode arguments: #() locals: #() body: {
+			ASAssign variable: (ASRef variable: #x) expression: (ASLiteral literal: 1)}}.
+	self assertExpression: source convertsTo: expected "withLocals: #(#x)".
 ]
 
 { #category : 'tests - comparison & membership operators' }
