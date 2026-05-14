@@ -23,10 +23,7 @@ ZagTSNode class >> computeLocals: body [
 ZagTSNode class >> converter: type [
 	"Returns the conversion function for a node of the given type (symbol)."
 	"This function should accept the ZagTSNode and return a Zag AST object."
-	type = #identifier ifTrue: [ ^#identifierToZagAST ].
 	(#(#'expression_statement' #'parenthesized_expression') includes: type) ifTrue: [ ^#childToZagAST ].
-	type = #module ifTrue: [ ^#moduleToZagAST ].
-	type = #string ifTrue: [ ^#stringToZagAST ].
 	(#(#integer #float) includes: type) ifTrue: [ ^#numberToZagAST ].
 	type = #'not_operator' ifTrue: [ ^#notToZagAST ].
 	type = #'unary_operator' ifTrue: [ ^#unaryToZagAST ].
@@ -35,9 +32,8 @@ ZagTSNode class >> converter: type [
 	type = #assignment ifTrue: [ ^#assignToZagAST ].
 	type = #'augmented_assignment' ifTrue: [ ^#augmentedAssignToZagAST ].
 	type = #'named_expression' ifTrue: [ ^#assignToZagAST ]. ":= - temp - should have different semantics later"
-	type = #'subscript' ifTrue: [ ^#subscriptToZagAST ].
-	type = #lambda ifTrue: [ ^#lambdaToZagAST ].
-	type = #call ifTrue: [ ^#callToZagAST ].
+	type = #'if_statement' ifTrue: [ ^#ifToZagAST ].
+	^(type asString,'ToZagAST') asSymbol
 ]
 
 { #category : 'constants' }
@@ -167,6 +163,14 @@ ZagTSNode >> binaryToZagASTSelector: selector [
 ]
 
 { #category : 'converting - by node type' }
+ZagTSNode >> blockToZagAST [
+	"Converts a block to a Zag AST."
+	^ASBlockNode arguments: #() locals: #() body: (
+		(1 to: self childrenCount) collect: [ :i | (self >> i) asZagASTNode ]
+	).
+]
+
+{ #category : 'converting - by node type' }
 ZagTSNode >> booleanToZagAST [
 	"convert and/or to Zag AST"
  	| op |
@@ -249,6 +253,12 @@ ZagTSNode >> getUnaryOperator [
 ZagTSNode >> identifierToZagAST [
 	"Converts me to a Zag AST, assuming I am an identifier."
 	^ASRef variable: self sourcePart asSymbol.
+]
+
+{ #category : 'converting - by node type' }
+ZagTSNode >> ifToZagAST [
+	"Converts an if statement to a Zag AST."
+	^ASSend target: (self >> 1) asZagASTNode selector: #ifTrue: args: { (self >> 2) asZagASTNode }.
 ]
 
 { #category : 'converting - by node type' }
