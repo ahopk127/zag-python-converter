@@ -229,14 +229,14 @@ PythonConversionTest >> testIfElif [
 	x = 0;
 elif condition2 == condition3:
 	x = 1;'.
-	expected := ASSend target: (ASRef variable: #condition1) selector: #ifTrue:ifFalse: args: {
-		ASBlockNode arguments: #() locals: #() body: {
-			ASAssign variable: (ASRef variable: #x) expression: (ASLiteral literal: 0)}.
-		ASSend target: (
-				ASSend target: (ASRef variable: #condition2) selector: #= args: {ASRef variable: #condition3})
-				selector: #ifTrue: args: {
+	expected := ASSend target: (ASArray statements: {
+		ASSend target: (ASRef variable: #condition1) selector: #-> args: {
 			ASBlockNode arguments: #() locals: #() body: {
-				ASAssign variable: (ASRef variable: #x) expression: (ASLiteral literal: 1)}}}.
+				ASAssign variable: (ASRef variable: #x) expression: (ASLiteral literal: 0)}}.
+		ASSend target: (ASSend target: (ASRef variable: #condition2) selector: #= args: {ASRef variable: #condition3}) selector: #-> args: {
+			ASBlockNode arguments: #() locals: #() body: {
+				ASAssign variable: (ASRef variable: #x) expression: (ASLiteral literal: 1)}}
+	}) selector: #switch.
 	self assertExpression: source convertsTo: expected "withLocals: #(#x)".
 ]
 
@@ -250,16 +250,17 @@ elif condition2 == condition3:
 	x = 1;
 else:
 	x = 2;'.
-	expected := ASSend target: (ASRef variable: #condition1) selector: #ifTrue:ifFalse: args: {
-		ASBlockNode arguments: #() locals: #() body: {
-			ASAssign variable: (ASRef variable: #x) expression: (ASLiteral literal: 0)}.
-		ASSend target: (
-				ASSend target: (ASRef variable: #condition2) selector: #= args: {ASRef variable: #condition3})
-				selector: #ifTrue:ifFalse: args: {
+	expected := ASSend target: (ASArray statements: {
+		ASSend target: (ASRef variable: #condition1) selector: #-> args: {
 			ASBlockNode arguments: #() locals: #() body: {
-				ASAssign variable: (ASRef variable: #x) expression: (ASLiteral literal: 1)}.
+				ASAssign variable: (ASRef variable: #x) expression: (ASLiteral literal: 0)}}.
+		ASSend target: (ASSend target: (ASRef variable: #condition2) selector: #= args: {ASRef variable: #condition3}) selector: #-> args: {
 			ASBlockNode arguments: #() locals: #() body: {
-				ASAssign variable: (ASRef variable: #x) expression: (ASLiteral literal: 2)}}}.
+				ASAssign variable: (ASRef variable: #x) expression: (ASLiteral literal: 1)}}.
+		ASSend target: (ASLiteral literal: true) selector: #-> args: {
+			ASBlockNode arguments: #() locals: #() body: {
+				ASAssign variable: (ASRef variable: #x) expression: (ASLiteral literal: 2)}}
+	}) selector: #switch.
 	self assertExpression: source convertsTo: expected "withLocals: #(#x)".
 ]
 
