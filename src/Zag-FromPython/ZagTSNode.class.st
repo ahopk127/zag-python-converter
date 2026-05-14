@@ -256,11 +256,30 @@ ZagTSNode >> identifierToZagAST [
 ]
 
 { #category : 'converting - by node type' }
+ZagTSNode >> ifElifToZagAST [
+	"Converts an if-elif statement to a Zag switch statement."
+	"ASArray does not appear to work, so temporarily, this code returns an array object instead of an ASArray for the switch target."
+	| conditions |
+	conditions := Array new: self childrenCount - 1.
+	conditions at: 1 put: (ASSend target: (self >> 1) asZagASTNode selector: #-> args: {(self >> 2) asZagASTNode}).
+	3 to: self childrenCount do: [ :i |
+		conditions at: i - 1 put: ((self >> i) tsNodeType = #'elif_clause'
+			ifTrue: [ ASSend target: (self >> i >> 1) asZagASTNode selector: #-> args: {(self >> i >> 2) asZagASTNode } ]
+			ifFalse: [ ASSend target: (ASLiteral literal: true) selector: #-> args: {(self >> i >> 1) asZagASTNode } ])].
+	^ASSend target: conditions selector: #switch.
+]
+
+{ #category : 'converting - by node type' }
 ZagTSNode >> ifToZagAST [
 	"Converts an if statement to a Zag AST."
-	^(self >> (self childrenCount)) tsNodeType = #'else_clause'
-		ifTrue: [ ASSend target: (self >> 1) asZagASTNode selector: #ifTrue:ifFalse: args: { (self >> 2) asZagASTNode . (self >> self childrenCount >> 1) asZagASTNode } ]
-		ifFalse: [ASSend target: (self >> 1) asZagASTNode selector: #ifTrue: args: { (self >> 2) asZagASTNode }].
+	"If the statement is just if or if/else, uses ifTrue: or ifTrue:ifFalse:.  Otherwise, uses a switch statement from ifElifToZagAST."
+	| hasElse |
+	hasElse := (self >> (self childrenCount)) tsNodeType = #'else_clause'.
+	hasElse & (self childrenCount = 3) ifTrue: [
+		^ASSend target: (self >> 1) asZagASTNode selector: #ifTrue:ifFalse: args: { (self >> 2) asZagASTNode . (self >> self childrenCount >> 1) asZagASTNode }].
+	hasElse not & (self childrenCount = 2) ifTrue: [
+		^ASSend target: (self >> 1) asZagASTNode selector: #ifTrue: args: { (self >> 2) asZagASTNode }].
+	^self ifElifToZagAST.
 ]
 
 { #category : 'converting - by node type' }
