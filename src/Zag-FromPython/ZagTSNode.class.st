@@ -258,7 +258,9 @@ ZagTSNode >> identifierToZagAST [
 { #category : 'converting - by node type' }
 ZagTSNode >> ifToZagAST [
 	"Converts an if statement to a Zag AST."
-	^ASSend target: (self >> 1) asZagASTNode selector: #ifTrue: args: { (self >> 2) asZagASTNode }.
+	^(self >> (self childrenCount)) tsNodeType = #'else_clause'
+		ifTrue: [ ASSend target: (self >> 1) asZagASTNode selector: #ifTrue:ifFalse: args: { (self >> 2) asZagASTNode . (self >> self childrenCount >> 1) asZagASTNode } ]
+		ifFalse: [ASSend target: (self >> 1) asZagASTNode selector: #ifTrue: args: { (self >> 2) asZagASTNode }].
 ]
 
 { #category : 'converting - by node type' }
