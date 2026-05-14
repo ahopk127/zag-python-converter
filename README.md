@@ -15,6 +15,13 @@ ZagTSNode pythonToZagAST: '[PYTHON CODE]'
 
 - [Tree Sitter](https://tree-sitter.github.io/tree-sitter/), Pharo Smalltalk version
 
+## Extension Messages
+
+This project implements a few extension messages in order to handle things as they would be in Python.  Translated code uses these extensions in certain situations.
+- `toPythonBoolean` converts a value to a boolean based on Python truthiness.  Related messages like `pythonOr:` do boolean operations based on truthiness.
+- `zwAt:` and related messages allows indexing arrays according to Python conventions (initial index is 0, negative indices access elements at the end).
+- `switch` implements a switch/cond statement, used for translating if/elif statements.  `ifTrue:` and `ifTrue:ifFalse:` are used for if statements without elifs.
+
 ## Authors/Contact
 
 This is the thesis project of [Adrien Hopkins](https://ahopkins.ca/) (<a1hopkins@torontomu.ca>), made as part of the [Zag Research](https://github.com/Zag-Research/) team.
