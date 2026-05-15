@@ -33,6 +33,7 @@ ZagTSNode class >> converter: type [
 	type = #'augmented_assignment' ifTrue: [ ^#augmentedAssignToZagAST ].
 	type = #'named_expression' ifTrue: [ ^#assignToZagAST ]. ":= - temp - should have different semantics later"
 	type = #'if_statement' ifTrue: [ ^#ifToZagAST ].
+	type = #'for_statement' ifTrue: [ ^#forToZagAST ].
 	^(type asString,'ToZagAST') asSymbol
 ]
 
@@ -229,6 +230,14 @@ ZagTSNode >> floatToZagAST [
 	^ASSend
 		target: (self >> 2 >> 1) asZagASTNode
 		selector: #asFloat.
+]
+
+{ #category : 'converting - by node type' }
+ZagTSNode >> forToZagAST [
+	"Converts for loop nodes to Zag AST."
+	^ASSend target: (self >> 2) asZagASTNode selector: #do: args: {
+		ASBlockNode arguments: { (self >> 1) asZagASTNode } locals: #() body: (
+			(self >> 3) children collect: #asZagASTNode )}.
 ]
 
 { #category : 'computing' }

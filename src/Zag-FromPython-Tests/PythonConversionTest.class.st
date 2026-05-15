@@ -123,7 +123,7 @@ PythonConversionTest >> testAssignPlus [
 	self assertExpression: source convertsTo: expected withLocals: #(#a).
 ]
 
-{ #category : 'tests - if statements' }
+{ #category : 'tests - control flow' }
 PythonConversionTest >> testBasicIf [
 	"Tests converting an if statement without any elif or else blocks."
 	| source expected |
@@ -221,7 +221,20 @@ PythonConversionTest >> testFloatNode [
 	self assertExpression: source convertsTo: expected.
 ]
 
-{ #category : 'tests - if statements' }
+{ #category : 'tests - control flow' }
+PythonConversionTest >> testFor [
+	"Tests converting a basic for loop."
+	| source expected |
+	source := 'for i in c:
+	sum += i'.
+	expected := ASSend target: (ASRef variable: #c) selector: #do: args: {
+		ASBlockNode arguments: { ASRef variable: #i } locals: #() body: {
+			ASAssign variable: (ASRef variable: #sum) expression: (
+				ASSend target: (ASRef variable: #sum) selector: #+ args: { ASRef variable: #i })}}.
+	self assertExpression: source convertsTo: expected.
+]
+
+{ #category : 'tests - control flow' }
 PythonConversionTest >> testIfElif [
 	"Tests converting an if statement with an elif block."
 	| source expected |
@@ -240,7 +253,7 @@ elif condition2 == condition3:
 	self assertExpression: source convertsTo: expected "withLocals: #(#x)".
 ]
 
-{ #category : 'tests - if statements' }
+{ #category : 'tests - control flow' }
 PythonConversionTest >> testIfElifElse [
 	"Tests converting an if statement with an elif and else block."
 	| source expected |
@@ -264,7 +277,7 @@ else:
 	self assertExpression: source convertsTo: expected "withLocals: #(#x)".
 ]
 
-{ #category : 'tests - if statements' }
+{ #category : 'tests - control flow' }
 PythonConversionTest >> testIfElse [
 	"Tests converting an if statement with an else block."
 	| source expected |
